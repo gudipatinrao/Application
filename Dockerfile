@@ -1,7 +1,7 @@
 ARG IMAGE=openliberty/open-liberty:kernel-slim-java8-ibmjava-ubi
 FROM ${IMAGE} as staging
 USER 0
-RUN yum -y update && yum clean all
+#RUN yum -y update && yum clean all
 # Add Liberty server configuration including all necessary features
 COPY --chown=1001:0  server.xml /config/
 # This script will add the requested XML snippets to enable Liberty features and grow image to be fit-for-purpose using featureUtility.
@@ -17,7 +17,7 @@ RUN springBootUtility thin \
 
 FROM ${IMAGE}
 USER 0
-RUN yum -y update && yum clean all
+#RUN yum -y update && yum clean all
 COPY --chown=1001:0 server.xml /config
 RUN features.sh
 
