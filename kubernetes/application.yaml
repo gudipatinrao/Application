@@ -28,8 +28,14 @@ metadata:
     app: springbootapp
 spec:
   ports:
-    - port: 9080
-      targetPort: http-server
+    - name: 9080-tcp
+      port: 9080
+      targetPort: 9080
+      protocol: TCP
+    - name: 9443-tcp
+      port: 9443
+      targetPort: 9443
+      protocol: TCP
   selector:
     app: springbootapp
   type: NodePort
@@ -42,7 +48,9 @@ metadata:
     app: springbootapp
 spec:
   port:
-    targetPort: 9080
+    targetPort: 9443-tcp
+  tls:
+    termination: passthrough
   to:
     kind: Service
     name: springbootapp
