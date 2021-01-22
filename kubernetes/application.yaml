@@ -54,6 +54,7 @@ spec:
 ---
 apiVersion: route.openshift.io/v1
 kind: Route
+id: springbootapp-http
 metadata:
   name: springbootapp
   labels:
@@ -64,6 +65,4 @@ spec:
   tls:
     termination: passthrough
   to:
-    kind: Service
     name: springbootapp
-    weight: 100

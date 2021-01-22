@@ -1,6 +1,6 @@
 ARG IMAGE=openliberty/open-liberty:kernel-slim-java8-ibmjava-ubi
 FROM ${IMAGE} as staging
-USER 0
+USER root
 #RUN yum -y update && yum clean all
 # Add Liberty server configuration including all necessary features
 COPY --chown=1001:0  server.xml /config/
@@ -16,7 +16,7 @@ RUN springBootUtility thin \
  --targetLibCachePath=/staging/lib.index.cache
 
 FROM ${IMAGE}
-USER 0
+USER root
 #RUN yum -y update && yum clean all
 COPY --chown=1001:0 server.xml /config
 RUN features.sh
@@ -29,3 +29,7 @@ ARG VERBOSE=true
 # This script will add the requested server configurations, apply any interim fixes and populate caches to optimize runtime
 RUN configure.sh
 
+RUN chown -R 1001.0 /config && chmod -R g+rw /config
+RUN chown -R 1001.0 /opt/ol/wlp/usr/shared/resources/lib.index.cache && chmod -R g+rw /opt/ol/wlp/usr/shared/resources/lib.index.cache
+
+USER 1001
