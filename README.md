@@ -15,3 +15,4 @@ Containerize Spring Boot Application using Liberty:
 
     Please refer the documentation below for liberty cotainerization
     https://github.com/openliberty/ci.docker#building-an-application-image
+    https://hub.docker.com/_/open-liberty
