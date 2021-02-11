@@ -34,17 +34,55 @@ The application calls evenodd service for calculation, the even odd service is p
 
 ![Apptolib.png](images/Apptolib.png)
 
-1) Create Server.xml file in the application
+1. Create Server.xml file in the application
    Add the features in Feature Manager <feature>springBoot-2.0</feature>
                             <feature>servlet-4.0</feature>
 
- 2) Create a Docker file use base image openliberty/open-liberty:kernel-slim-java8-ibmjava-ubi
+2. Create a Docker file use base image openliberty/open-liberty:kernel-slim-java8-ibmjava-ubi
 
     This is a slim base image , we need to add the additional features as required
 
     liberty features ,springBootUtility which helps in thinning the container image
 
     liberty application server runs on port 9080
+
+3. The Docker file used in this example below
+
+ARG IMAGE=openliberty/open-liberty:kernel-slim-java8-ibmjava-ubi
+FROM ${IMAGE} as staging
+USER root
+#RUN yum -y update && yum clean all
+# Add Liberty server configuration including all necessary features
+COPY --chown=1001:0  server.xml /config/
+# This script will add the requested XML snippets to enable Liberty features and grow image to be fit-for-purpose using featureUtility.
+# Only available in 'kernel-slim'. The 'full' tag already includes all features for convenience.
+RUN features.sh
+# Add app
+COPY --chown=1001:0  /target/Application-0.0.1-SNAPSHOT.jar /staging/myFatApp.jar
+
+RUN springBootUtility thin \
+ --sourceAppPath=/staging/myFatApp.jar \
+ --targetThinAppPath=/staging/myThinApp.jar \
+ --targetLibCachePath=/staging/lib.index.cache
+
+FROM ${IMAGE}
+USER root
+#RUN yum -y update && yum clean all
+COPY --chown=1001:0 server.xml /config
+RUN features.sh
+
+COPY --from=staging /staging/lib.index.cache /lib.index.cache
+COPY --from=staging /staging/myThinApp.jar /config/dropins/spring/myThinApp.jar
+
+ARG VERBOSE=true
+
+# This script will add the requested server configurations, apply any interim fixes and populate caches to optimize runtime
+RUN configure.sh
+
+RUN chown -R 1001.0 /config && chmod -R g+rw /config
+RUN chown -R 1001.0 /opt/ol/wlp/usr/shared/resources/lib.index.cache && chmod -R g+rw /opt/ol/wlp/usr/shared/resources/lib.index.cache
+
+USER 1001
 
 References:
 -----------
