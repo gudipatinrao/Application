@@ -49,25 +49,42 @@ The application calls evenodd service for calculation, the even odd service is p
 3. The Docker file used in this example below
 
 ARG IMAGE=openliberty/open-liberty:kernel-slim-java8-ibmjava-ubi
+
 FROM ${IMAGE} as staging
+
 USER root
+
 COPY --chown=1001:0  server.xml /config/
+
 RUN features.sh
+
 COPY --chown=1001:0  /target/Application-0.0.1-SNAPSHOT.jar /staging/myFatApp.jar
+
 RUN springBootUtility thin \
  --sourceAppPath=/staging/myFatApp.jar \
  --targetThinAppPath=/staging/myThinApp.jar \
  --targetLibCachePath=/staging/lib.index.cache
+
 FROM ${IMAGE}
+
 USER root
+
 COPY --chown=1001:0 server.xml /config
+
 RUN features.sh
+
 COPY --from=staging /staging/lib.index.cache /lib.index.cache
+
 COPY --from=staging /staging/myThinApp.jar /config/dropins/spring/myThinApp.jar
+
 ARG VERBOSE=false
+
 RUN configure.sh
+
 RUN chown -R 1001.0 /config && chmod -R g+rw /config
+
 RUN chown -R 1001.0 /opt/ol/wlp/usr/shared/resources/lib.index.cache && chmod -R g+rw /opt/ol/wlp/usr/shared/resources/lib.index.cache
+
 USER 1001
 
 References:
