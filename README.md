@@ -1,3 +1,14 @@
+Transform the application as Cloud Native: ( Implement 12 factors as applicable)
+--------------------------------------------------------------------------------
+Factor 2 - Dependencies: Explicitly declare and isolate dependencies
+    Additional code libraries used by the applications are declared in the POM.xml
+Factor 3 - Configuration data: Store environment-specific configurations in environment variables
+(Litmus test can we make this code repository opensource)
+    DB URL /Credentials stored in Secrets and made available to container as environment variable
+Factor 4 - Backing services: Treat backing services as remotely attached resources
+
+Other Factors like Portbinding etc. are implicitly taken care by Openshift.
+
 Containerize Spring Boot Application using Liberty:
 ---------------------------------------------------
 There are some benefits of running Spring Boot applications on the Open Liberty runtime:
