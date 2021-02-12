@@ -41,6 +41,7 @@ Using Liberty allows you to leverage many if these automatic connections to bett
 
 -------------
 Example Application:
+
 --------------------
 
 The current application is a simple application which tells given number is even or odd
